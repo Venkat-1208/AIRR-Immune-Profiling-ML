@@ -288,3 +288,101 @@ This project is intended for research and educational purposes. It is not a clin
 
 
 
+## Baseline Results
+
+The initial baseline uses Logistic Regression with repertoire-level features extracted from adaptive immune receptor repertoire (AIRR) TSV files.
+
+### Dataset Summary
+
+| Metric | Value |
+|---|---:|
+| Total repertoires | 3,610 |
+| Training split | 2,888 |
+| Test split | 722 |
+| Extracted features | 8,190 |
+| Skipped files | 0 |
+
+### Evaluation Metrics
+
+| Metric | Score |
+|---|---:|
+| Accuracy | 59.42% |
+| Balanced Accuracy | 61.49% |
+| Precision | 51.87% |
+| Recall | 76.13% |
+| F1-score | 61.70% |
+| ROC-AUC | 0.6135 |
+
+### Confusion Matrix
+
+Rows represent actual labels and columns represent predicted labels.
+
+| | Predicted Negative | Predicted Positive |
+|---|---:|---:|
+| Actual Negative | 193 | 219 |
+| Actual Positive | 74 | 236 |
+
+These are initial baseline results from a stratified random train/test split. Because repertoires from different dataset groups may appear in both splits, these results do not establish generalization to an entirely unseen dataset. Group-aware or leave-one-dataset-out validation is a necessary next step.
+
+The current model is an experimental research baseline, not a clinically validated diagnostic system.
+
+## Setup
+
+Use Python 3.10 or another compatible Python version.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+## Dataset Organization
+
+Place the training data locally in the following structure:
+
+```text
+train_datasets/
+└── train_datasets/
+    ├── train_dataset_1/
+    │   ├── metadata.csv
+    │   └── *.tsv
+    ├── train_dataset_2/
+    ├── train_dataset_3/
+    ├── train_dataset_4/
+    ├── train_dataset_5/
+    ├── train_dataset_6/
+    ├── train_dataset_7/
+    └── train_dataset_8/
+```
+
+Each dataset directory must contain its metadata file and the corresponding repertoire TSV files. The dataset files are excluded from Git by `.gitignore`.
+
+## Train the Model
+
+From the project root:
+
+```powershell
+python .\src\train_model.py
+```
+
+The script extracts repertoire features, trains the Logistic Regression baseline, evaluates it, and saves the model and evaluation reports locally in the `results/` directory.
+
+## Predict a Repertoire
+
+Train the model first. Then provide the path to a repertoire TSV file:
+
+```powershell
+python .\src\predict_tsv.py "path\to\repertoire.tsv"
+```
+
+The script prints the predicted label and positive-class score.
+
+To save the prediction to a CSV file:
+
+```powershell
+python .\src\predict_tsv.py "path\to\repertoire.tsv" --output "results\prediction.csv"
+```
+
+The trained model and generated results are local artifacts and are not included in the GitHub repository by the current ignore rules.
+
